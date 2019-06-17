@@ -28,9 +28,9 @@ class Net(nn.Module):
     def __init__(self, ):
         super(Net, self).__init__()
         self.fc1 = nn.Linear(N_STATES, 50)      # 輸入狀態
-        self.fc1.weight.data.normal_(0, 0.1)   # initialization
+        self.fc1.weight.data.normal_(0, 0.1)   # initialization 用均值0，標準差0.1的正態分布填充
         self.out = nn.Linear(50, N_ACTIONS)     # 輸出動作
-        self.out.weight.data.normal_(0, 0.1)   # initialization
+        self.out.weight.data.normal_(0, 0.1)   # initialization 用均值0，標準差0.1的正態分布填充
 
     def forward(self, x):
         x = self.fc1(x)
@@ -50,10 +50,11 @@ class DQN(object):
         self.loss_func = nn.MSELoss()       # 選擇損失函數
 
     def choose_action(self, x):
-        x = torch.unsqueeze(torch.FloatTensor(x), 0).to(device)
+        x = torch.unsqueeze(torch.FloatTensor(x), 0).to(device)     # 維度擴充
         # input only one sample
         if np.random.uniform() < EPSILON:   # greedy 90%機率選擇最優解
             actions_value = self.eval_net.forward(x)        # 取出pytorch的tensor
+            print(actions_value)
             action = torch.max(actions_value, 1)[1].data.cpu().numpy()      # 選擇reward較大的
             action = action[0]  # return the argmax index，取出數字 0或1
         else:   # random 10%機率隨機
